@@ -1,0 +1,43 @@
+                    ┌────────────────────────────┐
+                    │      Client / Postman      │
+                    └─────────────┬──────────────┘
+                                  │
+                                  │ GET /api/orders/123
+                                  ▼
+                    ┌────────────────────────────┐
+                    │     API Gateway :8080      │
+                    │                            │
+                    │ Route: /api/orders/**      │
+                    │ uri = lb://ORDER-SERVICE   │
+                    └─────────────┬──────────────┘
+                                  │
+                                  │ "Where is ORDER-SERVICE?"
+                                  ▼
+                    ┌────────────────────────────┐
+                    │     Eureka Server :8761    │
+                    │                            │
+                    │ ORDER-SERVICE → 8081       │
+                    │ USER-SERVICE  → 8082       │
+                    └─────────────┬──────────────┘
+                                  │
+                   returns localhost:8081
+                                  │
+                                  ▼
+                    ┌────────────────────────────┐
+                    │ Spring Cloud LoadBalancer  │
+                    │    Picks one instance      │
+                    └─────────────┬──────────────┘
+                                  │
+                                  ▼
+                    ┌────────────────────────────┐
+                    │ ORDER-SERVICE :8081        │
+                    └─────────────┬──────────────┘
+                                  │
+                                  ▼
+                             Response
+                                  │
+                                  ▼
+                             API Gateway
+                                  │
+                                  ▼
+                                Client
