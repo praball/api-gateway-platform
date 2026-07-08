@@ -1,10 +1,6 @@
 Add @RestControllerAdvice
-Add DTOs
-Add Validations
-API request response model
 Use @Transactional for service layer
 Add Swagger for API documentation
-Add Bean validation
 Add docker-compose.yaml
 
 - Custom API Gateway filters

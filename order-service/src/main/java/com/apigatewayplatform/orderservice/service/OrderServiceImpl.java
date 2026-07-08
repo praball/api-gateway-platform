@@ -8,7 +8,6 @@ import com.apigatewayplatform.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,6 +50,9 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + id));
 
         if (orderRequest.getUserId() != null) {
+            if (!userClient.userExists(orderRequest.getUserId())) {
+                throw new IllegalArgumentException("User with id " + orderRequest.getUserId() + " doesn't exist");
+            }
             order.setUserId(orderRequest.getUserId());
         }
         if (orderRequest.getStatus() != null) {
@@ -103,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
         response.setShippingAddress(order.getShippingAddress());
         response.setBillingAddress(order.getBillingAddress());
         response.setPaymentMethod(order.getPaymentMethod());
-        response.setCreatedAt(Instant.now());
+        response.setCreatedAt(order.getCreatedAt());
         return response;
     }
 

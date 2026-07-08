@@ -3,6 +3,7 @@ package com.apigatewayplatform.orderservice.client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Component
 @RequiredArgsConstructor
@@ -20,8 +21,11 @@ public class UserClient {
                     .block();
 
             return true;
-        } catch  (Exception ex) {
+        } catch (WebClientResponseException.NotFound ex) {
+            // user doesnt exist in userdb
             return false;
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to communicate with User Service", ex);
         }
     }
 }

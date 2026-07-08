@@ -20,4 +20,3 @@ public class OrderResponse {
     private String paymentMethod;
     private Instant createdAt;
 }
-

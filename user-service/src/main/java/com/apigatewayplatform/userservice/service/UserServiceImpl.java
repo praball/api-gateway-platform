@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService {
         response.setCity(user.getCity());
         response.setState(user.getState());
         response.setZipCode(user.getZipCode());
-        response.setCreatedAt(Instant.now());
+        response.setCreatedAt(user.getCreatedAt());
         return response;
     }
 
