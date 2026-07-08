@@ -1,13 +1,18 @@
 package com.apigatewayplatform.orderservice.service;
 
 import com.apigatewayplatform.orderservice.client.UserClient;
+import com.apigatewayplatform.orderservice.dto.OrderRequest;
+import com.apigatewayplatform.orderservice.dto.OrderResponse;
 import com.apigatewayplatform.orderservice.entity.Order;
 import com.apigatewayplatform.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,55 +23,54 @@ public class OrderServiceImpl implements OrderService {
     private final UserClient userClient;
 
     @Override
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderResponse> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<Order> getOrderById(Long id) {
-        return orderRepository.findById(id);
+    public Optional<OrderResponse> getOrderById(Long id) {
+        return orderRepository.findById(id)
+                .map(this::convertToResponse);
     }
 
     @Override
-    public Order createOrder(Order order) {
-        if(!userClient.userExists(order.getUserId())) {
-            throw new IllegalArgumentException("User with id " + order.getUserId() + " doesn't exist");
+    public OrderResponse createOrder(OrderRequest orderRequest) {
+        if(!userClient.userExists(orderRequest.getUserId())) {
+            throw new IllegalArgumentException("User with id " + orderRequest.getUserId() + " doesn't exist");
         }
-        order.setOrderNumber(generateOrderNumber());
-        return orderRepository.save(order);
+        Order order = convertToEntity(orderRequest);
+        Order createdOrder = orderRepository.save(order);
+        return convertToResponse(createdOrder);
     }
 
     @Override
-    public Order updateOrder(Long id, Order orderDetails) {
+    public OrderResponse updateOrder(Long id, OrderRequest orderRequest) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + id));
 
-        if (orderDetails.getOrderNumber() != null && !orderDetails.getOrderNumber().equals(order.getOrderNumber())) {
-            if (orderRepository.existsByOrderNumber(orderDetails.getOrderNumber())) {
-                throw new IllegalArgumentException("Order with order number " + orderDetails.getOrderNumber() + " already exists");
-            }
-            order.setOrderNumber(orderDetails.getOrderNumber());
+        if (orderRequest.getUserId() != null) {
+            order.setUserId(orderRequest.getUserId());
         }
-        if (orderDetails.getUserId() != null) {
-            order.setUserId(orderDetails.getUserId());
+        if (orderRequest.getStatus() != null) {
+            order.setStatus(orderRequest.getStatus());
         }
-        if (orderDetails.getStatus() != null) {
-            order.setStatus(orderDetails.getStatus());
+        if (orderRequest.getTotalAmount() != null) {
+            order.setTotalAmount(orderRequest.getTotalAmount());
         }
-        if (orderDetails.getTotalAmount() != null) {
-            order.setTotalAmount(orderDetails.getTotalAmount());
+        if (orderRequest.getShippingAddress() != null) {
+            order.setShippingAddress(orderRequest.getShippingAddress());
         }
-        if (orderDetails.getShippingAddress() != null) {
-            order.setShippingAddress(orderDetails.getShippingAddress());
+        if (orderRequest.getBillingAddress() != null) {
+            order.setBillingAddress(orderRequest.getBillingAddress());
         }
-        if (orderDetails.getBillingAddress() != null) {
-            order.setBillingAddress(orderDetails.getBillingAddress());
-        }
-        if (orderDetails.getPaymentMethod() != null) {
-            order.setPaymentMethod(orderDetails.getPaymentMethod());
+        if (orderRequest.getPaymentMethod() != null) {
+            order.setPaymentMethod(orderRequest.getPaymentMethod());
         }
 
-        return orderRepository.save(order);
+        Order updatedOrder = orderRepository.save(order);
+        return convertToResponse(updatedOrder);
     }
 
     @Override
@@ -76,14 +80,31 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.delete(order);
     }
 
-    @Override
-    public List<Order> getOrdersByUserId(Long userId) {
-        return orderRepository.findByUserId(userId);
+    private Order convertToEntity(OrderRequest orderRequest) {
+        Order order = new Order();
+        order.setUserId(orderRequest.getUserId());
+        order.setStatus(orderRequest.getStatus());
+        order.setTotalAmount(orderRequest.getTotalAmount());
+        order.setShippingAddress(orderRequest.getShippingAddress());
+        order.setBillingAddress(orderRequest.getBillingAddress());
+        order.setPaymentMethod(orderRequest.getPaymentMethod());
+        order.setOrderNumber(generateOrderNumber());
+
+        return order;
     }
 
-    @Override
-    public Optional<Order> getOrderByOrderNumber(String orderNumber) {
-        return orderRepository.findByOrderNumber(orderNumber);
+    private OrderResponse convertToResponse(Order order) {
+        OrderResponse response = new OrderResponse();
+        response.setId(order.getId());
+        response.setOrderNumber(order.getOrderNumber());
+        response.setUserId(order.getUserId());
+        response.setStatus(order.getStatus());
+        response.setTotalAmount(order.getTotalAmount());
+        response.setShippingAddress(order.getShippingAddress());
+        response.setBillingAddress(order.getBillingAddress());
+        response.setPaymentMethod(order.getPaymentMethod());
+        response.setCreatedAt(Instant.now());
+        return response;
     }
 
     private String generateOrderNumber() {

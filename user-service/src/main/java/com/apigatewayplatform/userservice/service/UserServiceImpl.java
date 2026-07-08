@@ -1,11 +1,16 @@
 package com.apigatewayplatform.userservice.service;
 
+import com.apigatewayplatform.userservice.dto.UserRequest;
+import com.apigatewayplatform.userservice.dto.UserResponse;
 import com.apigatewayplatform.userservice.entity.User;
 import com.apigatewayplatform.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -14,57 +19,63 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserResponse> getUserById(Long id) {
+        return userRepository.findById(id)
+                .map(this::convertToResponse);
     }
 
     @Override
-    public User createUser(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("User with email " + user.getEmail() + " already exists");
+    public UserResponse createUser(UserRequest userRequest) {
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
+            throw new IllegalArgumentException("User with email " + userRequest.getEmail() + " already exists");
         }
-        return userRepository.save(user);
+        User user = convertToEntity(userRequest);
+        User createdUser = userRepository.save(user);
+        return convertToResponse(createdUser);
     }
 
     @Override
-    public User updateUser(Long id, User userDetails) {
+    public UserResponse updateUser(Long id, UserRequest userRequest) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
 
-        if (userDetails.getFirstName() != null) {
-            user.setFirstName(userDetails.getFirstName());
+        if (userRequest.getFirstName() != null) {
+            user.setFirstName(userRequest.getFirstName());
         }
-        if (userDetails.getLastName() != null) {
-            user.setLastName(userDetails.getLastName());
+        if (userRequest.getLastName() != null) {
+            user.setLastName(userRequest.getLastName());
         }
-        if (userDetails.getEmail() != null && !userDetails.getEmail().equals(user.getEmail())) {
-            if (userRepository.existsByEmail(userDetails.getEmail())) {
-                throw new IllegalArgumentException("User with email " + userDetails.getEmail() + " already exists");
+        if (userRequest.getEmail() != null && !userRequest.getEmail().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(userRequest.getEmail())) {
+                throw new IllegalArgumentException("User with email " + userRequest.getEmail() + " already exists");
             }
-            user.setEmail(userDetails.getEmail());
+            user.setEmail(userRequest.getEmail());
         }
-        if (userDetails.getPhone() != null) {
-            user.setPhone(userDetails.getPhone());
+        if (userRequest.getPhone() != null) {
+            user.setPhone(userRequest.getPhone());
         }
-        if (userDetails.getAddress() != null) {
-            user.setAddress(userDetails.getAddress());
+        if (userRequest.getAddress() != null) {
+            user.setAddress(userRequest.getAddress());
         }
-        if (userDetails.getCity() != null) {
-            user.setCity(userDetails.getCity());
+        if (userRequest.getCity() != null) {
+            user.setCity(userRequest.getCity());
         }
-        if (userDetails.getState() != null) {
-            user.setState(userDetails.getState());
+        if (userRequest.getState() != null) {
+            user.setState(userRequest.getState());
         }
-        if (userDetails.getZipCode() != null) {
-            user.setZipCode(userDetails.getZipCode());
+        if (userRequest.getZipCode() != null) {
+            user.setZipCode(userRequest.getZipCode());
         }
 
-        return userRepository.save(user);
+        User updatedUser = userRepository.save(user);
+        return convertToResponse(updatedUser);
     }
 
     @Override
@@ -74,8 +85,32 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(user);
     }
 
-    @Override
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    private User convertToEntity(UserRequest userRequest) {
+        User user = new User();
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
+        user.setEmail(userRequest.getEmail());
+        user.setPhone(userRequest.getPhone());
+        user.setAddress(userRequest.getAddress());
+        user.setCity(userRequest.getCity());
+        user.setState(userRequest.getState());
+        user.setZipCode(userRequest.getZipCode());
+        return user;
     }
+
+    private UserResponse convertToResponse(User user) {
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
+        response.setEmail(user.getEmail());
+        response.setPhone(user.getPhone());
+        response.setAddress(user.getAddress());
+        response.setCity(user.getCity());
+        response.setState(user.getState());
+        response.setZipCode(user.getZipCode());
+        response.setCreatedAt(Instant.now());
+        return response;
+    }
+
 }

@@ -1,21 +1,20 @@
 package com.apigatewayplatform.userservice.service;
 
-import com.apigatewayplatform.userservice.entity.User;
+import com.apigatewayplatform.userservice.dto.UserRequest;
+import com.apigatewayplatform.userservice.dto.UserResponse;
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
 
-    List<User> getAllUsers();
+    List<UserResponse> getAllUsers();
 
-    Optional<User> getUserById(Long id);
+    Optional<UserResponse> getUserById(Long id);
 
-    User createUser(User user);
+    UserResponse createUser(UserRequest userRequest);
 
-    User updateUser(Long id, User user);
+    UserResponse updateUser(Long id, UserRequest userRequest);
 
     void deleteUser(Long id);
-
-    Optional<User> getUserByEmail(String email);
 
 }

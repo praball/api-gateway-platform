@@ -1,23 +1,20 @@
 package com.apigatewayplatform.orderservice.service;
 
-import com.apigatewayplatform.orderservice.entity.Order;
+import com.apigatewayplatform.orderservice.dto.OrderRequest;
+import com.apigatewayplatform.orderservice.dto.OrderResponse;
 import java.util.List;
 import java.util.Optional;
 
 public interface OrderService {
 
-    List<Order> getAllOrders();
+    List<OrderResponse> getAllOrders();
 
-    Optional<Order> getOrderById(Long id);
+    Optional<OrderResponse> getOrderById(Long id);
 
-    Order createOrder(Order order);
+    OrderResponse createOrder(OrderRequest orderRequest);
 
-    Order updateOrder(Long id, Order order);
+    OrderResponse updateOrder(Long id, OrderRequest orderRequest);
 
     void deleteOrder(Long id);
-
-    List<Order> getOrdersByUserId(Long userId);
-
-    Optional<Order> getOrderByOrderNumber(String orderNumber);
 
 }
