@@ -9,7 +9,7 @@ public interface UserService {
 
     List<UserResponse> getAllUsers();
 
-    Optional<UserResponse> getUserById(Long id);
+    UserResponse getUserById(Long id);
 
     UserResponse createUser(UserRequest userRequest);
 

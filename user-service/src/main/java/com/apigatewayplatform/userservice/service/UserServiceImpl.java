@@ -3,13 +3,13 @@ package com.apigatewayplatform.userservice.service;
 import com.apigatewayplatform.userservice.dto.UserRequest;
 import com.apigatewayplatform.userservice.dto.UserResponse;
 import com.apigatewayplatform.userservice.entity.User;
+import com.apigatewayplatform.userservice.exception.DuplicateUserException;
+import com.apigatewayplatform.userservice.exception.UserNotFoundException;
 import com.apigatewayplatform.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,15 +26,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserResponse> getUserById(Long id) {
-        return userRepository.findById(id)
-                .map(this::convertToResponse);
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+
+        return convertToResponse(user);
     }
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {
         if (userRepository.existsByEmail(userRequest.getEmail())) {
-            throw new IllegalArgumentException("User with email " + userRequest.getEmail() + " already exists");
+            throw new DuplicateUserException(userRequest.getEmail());
         }
         User user = convertToEntity(userRequest);
         User createdUser = userRepository.save(user);
@@ -44,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse updateUser(Long id, UserRequest userRequest) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException(id));
 
         if (userRequest.getFirstName() != null) {
             user.setFirstName(userRequest.getFirstName());
@@ -54,7 +56,7 @@ public class UserServiceImpl implements UserService {
         }
         if (userRequest.getEmail() != null && !userRequest.getEmail().equals(user.getEmail())) {
             if (userRepository.existsByEmail(userRequest.getEmail())) {
-                throw new IllegalArgumentException("User with email " + userRequest.getEmail() + " already exists");
+                throw new DuplicateUserException(userRequest.getEmail());
             }
             user.setEmail(userRequest.getEmail());
         }
@@ -81,7 +83,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+                .orElseThrow(() -> new UserNotFoundException(id));
         userRepository.delete(user);
     }
 
