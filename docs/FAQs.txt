@@ -1,0 +1,50 @@
+1. Why call User Service instead of userdb?
+
+Because each microservice owns its own database.
+
+User Service  <--> userdb
+Order Service <--> orderdb
+
+Order Service should never access userdb directly. Otherwise, services become tightly coupled, defeating the purpose of microservices.
+
+--------x--------
+
+2. Why not map Order and User with JPA?
+
+That works in a monolith, where both entities share one database.
+
+In microservices:
+
+orderdb     |     userdb
+ Order      |      User
+
+They're in different databases (and often different servers), so @ManyToOne / @JoinColumn is not appropriate.
+
+Instead, Order stores only:
+
+Long userId;
+
+and validates it by calling User Service.
+
+--------x--------
+
+3. Why not use FeignClient to call User Service?
+
+FeignClient is a declarative web service client that makes writing web service clients easier. However, it has some limitations:
+- It can be hard to debug, as it hides the underlying HTTP calls.
+- It can introduce tight coupling between services, as it relies on the service's interface.
+- It can be less flexible, as it may not support all HTTP features or customizations.
+
+In this project, we use RestTemplate instead of FeignClient for the following reasons:
+- RestTemplate provides more control over the HTTP requests and responses, allowing for better error handling and logging.
+- RestTemplate is more flexible, as it can be easily customized to support different HTTP features and configurations.
+- RestTemplate is more suitable for microservices architecture, as it allows for better separation of concerns and reduces tight coupling between services.
+
+--------x--------
+
+4. Doesn't .block() defeat WebFlux?
+
+Yes, but it's okay here. Your Order Service is using:
+spring-boot-starter-web
+
+which is Spring MVC (blocking). So blocking is normal. If the entire service were built on WebFlux, then we'd return Mono<Order> and avoid .block().

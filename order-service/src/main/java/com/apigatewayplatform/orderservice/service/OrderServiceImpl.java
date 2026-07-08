@@ -1,17 +1,21 @@
 package com.apigatewayplatform.orderservice.service;
 
+import com.apigatewayplatform.orderservice.client.UserClient;
 import com.apigatewayplatform.orderservice.entity.Order;
 import com.apigatewayplatform.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+
+    private final UserClient userClient;
 
     @Override
     public List<Order> getAllOrders() {
@@ -25,9 +29,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order createOrder(Order order) {
-        if (orderRepository.existsByOrderNumber(order.getOrderNumber())) {
-            throw new IllegalArgumentException("Order with order number " + order.getOrderNumber() + " already exists");
+        if(!userClient.userExists(order.getUserId())) {
+            throw new IllegalArgumentException("User with id " + order.getUserId() + " doesn't exist");
         }
+        order.setOrderNumber(generateOrderNumber());
         return orderRepository.save(order);
     }
 
@@ -79,5 +84,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Optional<Order> getOrderByOrderNumber(String orderNumber) {
         return orderRepository.findByOrderNumber(orderNumber);
+    }
+
+    private String generateOrderNumber() {
+        return "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }

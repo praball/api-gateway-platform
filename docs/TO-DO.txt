@@ -6,4 +6,17 @@ Use @Transactional for service layer
 Add Swagger for API documentation
 Add Bean validation
 Add docker-compose.yaml
-Introduce Redis from docker
+
+- Custom API Gateway filters
+- Redis-backed distributed rate limiting
+- Multiple algorithms (Token Bucket, Sliding Window, Leaky Bucket)
+- JWT authentication & authorization
+- Role-based routing
+- Kafka async audit logging
+- Request tracing
+- Micrometer + Prometheus + Grafana + New Relic
+- Config Server
+- Docker Compose
+- Kubernetes
+- MCP Server
+- LLM-powered admin interface
