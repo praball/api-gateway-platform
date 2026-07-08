@@ -1,4 +1,3 @@
-Add Actual Endpoints with Services
 Add @RestControllerAdvice
 Add DTOs
 Add Validations
