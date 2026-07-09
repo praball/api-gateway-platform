@@ -1,0 +1,20 @@
+ID,Test Case,Request,Expected Result,Status
+TC-01,Create User,POST /api/users with valid data,User created (201),Pass
+TC-02,CreatDuplicatUser,POST same email,409 Conflict,Pass
+TC-03,Get Existing User,GET /api/users/{id},200 OK,Pass
+TC-04,Get Invalid User,GET invalid id,404 Not Found,Pass
+TC-05,Update Existing User,PUT valid id,200 OK,Pass
+TC-06,Update Invalid User,PUT invalid id,404 Not Found,Pass
+TC-07,Delete Existing User,DELETE valid id,204 No Content,Pass
+TC-08,Delete Invalid User,DELETE invalid id,404 Not Found,Pass
+TC-09,User Validation,Missing/invalid fields,400 Bad Request,Pass
+TC-10,Create Order,POST valid order,201 Created,Pass
+TC-11,Create Order (Invalid User),POST with non-existing userId,404 Not Found,Pass
+TC-12,Create Order (User Service Down),"Stop user-service, POST order",503 Service Unavailable,Pass
+TC-13,Get Existing Order,GET /api/orders/{id},200 OK,Pass
+TC-14,Get Invalid Order,GET invalid id,404 Not Found,Pass
+TC-15,Update Existing Order,PUT valid id,200 OK,Pass
+TC-16,Update Invalid Order,PUT invalid id,404 Not Found,Pass
+TC-17,Delete Existing Order,DELETE valid id,204 No Content,Pass
+TC-18,Delete Invalid Order,DELETE invalid id,404 Not Found,Pass
+TC-19,Order Validation,Missing/invalid fields,400 Bad Request,Pass
