@@ -4,12 +4,13 @@ import com.apigatewayplatform.orderservice.client.UserClient;
 import com.apigatewayplatform.orderservice.dto.OrderRequest;
 import com.apigatewayplatform.orderservice.dto.OrderResponse;
 import com.apigatewayplatform.orderservice.entity.Order;
+import com.apigatewayplatform.orderservice.exception.OrderNotFoundException;
+import com.apigatewayplatform.orderservice.exception.UserNotFoundException;
 import com.apigatewayplatform.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,17 +30,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<OrderResponse> getOrderById(Long id) {
-        return orderRepository.findById(id)
-                .map(this::convertToResponse);
+    public OrderResponse getOrderById(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
+
+        return convertToResponse(order);
     }
 
     @Override
     public OrderResponse createOrder(OrderRequest orderRequest) {
-        if(!userClient.userExists(orderRequest.getUserId())) {
-            throw new IllegalArgumentException("User with id " + orderRequest.getUserId() + " doesn't exist");
-        }
         Order order = convertToEntity(orderRequest);
+        if(!userClient.userExists(orderRequest.getUserId())) {
+            throw new UserNotFoundException(orderRequest.getUserId());
+        }
         Order createdOrder = orderRepository.save(order);
         return convertToResponse(createdOrder);
     }
@@ -47,11 +50,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponse updateOrder(Long id, OrderRequest orderRequest) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + id));
+                .orElseThrow(() -> new OrderNotFoundException(id));
 
         if (orderRequest.getUserId() != null) {
             if (!userClient.userExists(orderRequest.getUserId())) {
-                throw new IllegalArgumentException("User with id " + orderRequest.getUserId() + " doesn't exist");
+                throw new UserNotFoundException(orderRequest.getUserId());
             }
             order.setUserId(orderRequest.getUserId());
         }
@@ -78,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrder(Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + id));
+                .orElseThrow(() -> new OrderNotFoundException(id));
         orderRepository.delete(order);
     }
 

@@ -31,29 +31,18 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponse> getOrderById(@PathVariable Long id) {
-        return orderService.getOrderById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<OrderResponse> getOrderById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<OrderResponse> updateOrder(@PathVariable Long id, @Valid @RequestBody OrderRequest orderRequest) {
-        try {
-            OrderResponse updatedOrder = orderService.updateOrder(id, orderRequest);
-            return ResponseEntity.ok(updatedOrder);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<OrderResponse> updateOrder(@PathVariable("id") Long id, @Valid @RequestBody OrderRequest orderRequest) {
+        return ResponseEntity.ok(orderService.updateOrder(id, orderRequest));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        try {
-            orderService.deleteOrder(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> deleteOrder(@PathVariable("id") Long id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.noContent().build();
     }
 }

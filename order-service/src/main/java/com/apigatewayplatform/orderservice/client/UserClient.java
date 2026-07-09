@@ -1,9 +1,12 @@
 package com.apigatewayplatform.orderservice.client;
 
+import com.apigatewayplatform.orderservice.exception.UserServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+
+import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor
@@ -18,6 +21,7 @@ public class UserClient {
                     .uri("http://user-service/api/users/{id}", userId)
                     .retrieve()
                     .toBodilessEntity()
+                     .timeout(Duration.ofSeconds(4))
                     .block();
 
             return true;
@@ -25,7 +29,7 @@ public class UserClient {
             // user doesnt exist in userdb
             return false;
         } catch (Exception ex) {
-            throw new RuntimeException("Failed to communicate with User Service", ex);
+            throw new UserServiceUnavailableException();
         }
     }
 }
