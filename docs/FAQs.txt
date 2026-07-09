@@ -1,4 +1,4 @@
-1. Why call User Service instead of userdb?
+1. Why call User Service instead of userdb while validating userid for creating an order in Order service?
 
 Because each microservice owns its own database.
 
@@ -42,9 +42,52 @@ In this project, we use RestTemplate instead of FeignClient for the following re
 
 --------x--------
 
-4. Doesn't .block() defeat WebFlux?
+4. Doesn't the use of .block() defeat the purpose of using WebFlux?
 
 Yes, but it's okay here. Your Order Service is using:
 spring-boot-starter-web
 
 which is Spring MVC (blocking). So blocking is normal. If the entire service were built on WebFlux, then we'd return Mono<Order> and avoid .block().
+
+--------x--------
+
+5. Why to use Redis for rate limiting instead of in-memory?
+
+Suppose you have 3 gateway instances.
+
+     Gateway-1        |       Gateway-2         |       Gateway-3
+
+If each keeps its own counter:
+
+Gateway1 : 5 requests |  Gateway2 : 5 requests  |  Gateway3 : 5 requests
+
+The client effectively gets 15 requests instead of 5.
+
+Redis solves this.
+
+Gateway1 ─┐
+Gateway2 ─┼── Redis Counter = 5
+Gateway3 ─┘
+
+All gateway instances share the same counter.
+
+That's why it's called distributed rate limiting.
+
+--------x--------
+
+6. CompletableFuture vs Mono
+
+CompletableFuture:
+- One async result.
+- Java concurrency API.
+- Doesn't model streams or backpressure.
+
+Mono
+- One async result (0 or 1 value).
+- Part of Reactor/WebFlux.
+- Integrates with Spring WebFlux and supports reactive pipelines.
+
+Think:
+
+CompletableFuture ≈ async task
+Mono ≈ async task + reactive pipeline

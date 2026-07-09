@@ -1,6 +1,6 @@
 ID,Test Case,Request,Expected Result,Status
 TC-01,Create User,POST /api/users with valid data,User created (201),Pass
-TC-02,CreatDuplicatUser,POST same email,409 Conflict,Pass
+TC-02,CreatDuplicateUser,POST same email,409 Conflict,Pass
 TC-03,Get Existing User,GET /api/users/{id},200 OK,Pass
 TC-04,Get Invalid User,GET invalid id,404 Not Found,Pass
 TC-05,Update Existing User,PUT valid id,200 OK,Pass

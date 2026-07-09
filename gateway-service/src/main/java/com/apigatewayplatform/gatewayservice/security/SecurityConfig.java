@@ -1,8 +1,10 @@
 package com.apigatewayplatform.gatewayservice.security;
 
+import com.apigatewayplatform.gatewayservice.filter.RateLimitFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
@@ -14,10 +16,18 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthenticationFilter AuthenticationFilter;
+    private final AuthenticationFilter authenticationFilter;
 
     @Bean
-    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
+    public RateLimitFilter rateLimitFilter(
+            ReactiveStringRedisTemplate redisTemplate,
+            JwtUtil jwtUtil) {
+        return new RateLimitFilter(redisTemplate, jwtUtil);
+    }
+
+    @Bean
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http,
+                                                      RateLimitFilter rateLimitFilter) {
 
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
@@ -31,7 +41,9 @@ public class SecurityConfig {
 
                         .anyExchange().authenticated()
                 )
-                .addFilterAt(AuthenticationFilter,
+                .addFilterAt(authenticationFilter,
+                        SecurityWebFiltersOrder.AUTHENTICATION)
+                .addFilterAfter(rateLimitFilter,
                         SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
