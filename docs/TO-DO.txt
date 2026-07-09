@@ -1,4 +1,3 @@
-Add Swagger for API documentation
 multi-stage build in Dockerfile
 
 - Custom API Gateway filters
