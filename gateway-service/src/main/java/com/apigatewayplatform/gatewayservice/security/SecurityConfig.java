@@ -3,6 +3,7 @@ package com.apigatewayplatform.gatewayservice.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -22,6 +23,12 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers("/auth/**").permitAll()
+                        .pathMatchers(HttpMethod.DELETE, "/api/users/**")
+                        .hasRole("ADMIN")
+
+                        .pathMatchers(HttpMethod.GET, "/api/users/**")
+                        .hasAnyRole("ADMIN", "USER")
+
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(AuthenticationFilter,

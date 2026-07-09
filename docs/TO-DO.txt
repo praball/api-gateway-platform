@@ -5,10 +5,8 @@ multi-stage build in Dockerfile
 - Custom API Gateway filters
 - Redis-backed distributed rate limiting
 - Multiple algorithms (Token Bucket, Sliding Window, Leaky Bucket)
-- JWT authentication & authorization
-- Role-based routing
 - Kafka async audit logging
-- Request tracing
+- Request tracing (Trace ID / Correlation ID)
 - Micrometer + Prometheus + Grafana + New Relic
 - Config Server
 - Docker Compose

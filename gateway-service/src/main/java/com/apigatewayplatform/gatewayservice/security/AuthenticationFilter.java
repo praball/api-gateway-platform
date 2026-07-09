@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
@@ -12,7 +14,7 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -34,9 +36,6 @@ public class AuthenticationFilter implements WebFilter {
         String authHeader =
                 exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 
-        System.out.println("Path: " + path);
-        System.out.println("Auth Header: " + authHeader);
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
@@ -44,7 +43,10 @@ public class AuthenticationFilter implements WebFilter {
 
         String token = authHeader.substring(7);
 
-        System.out.println("Token valid: " + jwtUtil.validateToken(token));
+        String role = jwtUtil.extractRole(token);
+
+        List<GrantedAuthority> authorities =
+                List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
         if (!jwtUtil.validateToken(token)) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
@@ -57,7 +59,7 @@ public class AuthenticationFilter implements WebFilter {
                 new UsernamePasswordAuthenticationToken(
                         username,
                         null,
-                        Collections.emptyList());
+                        authorities);
 
         return chain.filter(exchange)
                 .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
