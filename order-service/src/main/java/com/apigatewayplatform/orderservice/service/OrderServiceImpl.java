@@ -9,6 +9,7 @@ import com.apigatewayplatform.orderservice.exception.UserNotFoundException;
 import com.apigatewayplatform.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +24,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserClient userClient;
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderResponse> getAllOrders() {
         return orderRepository.findAll().stream()
                 .map(this::convertToResponse)
@@ -30,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderResponse getOrderById(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
@@ -38,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest) {
         Order order = convertToEntity(orderRequest);
         if(!userClient.userExists(orderRequest.getUserId())) {
@@ -48,6 +52,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public OrderResponse updateOrder(Long id, OrderRequest orderRequest) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
@@ -79,6 +84,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public void deleteOrder(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));

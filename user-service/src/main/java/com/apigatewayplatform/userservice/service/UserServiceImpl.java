@@ -8,6 +8,7 @@ import com.apigatewayplatform.userservice.exception.UserNotFoundException;
 import com.apigatewayplatform.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(this::convertToResponse)
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
@@ -34,6 +37,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse createUser(UserRequest userRequest) {
         if (userRepository.existsByEmail(userRequest.getEmail())) {
             throw new DuplicateUserException(userRequest.getEmail());
@@ -44,6 +48,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserResponse updateUser(Long id, UserRequest userRequest) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
@@ -81,6 +86,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));

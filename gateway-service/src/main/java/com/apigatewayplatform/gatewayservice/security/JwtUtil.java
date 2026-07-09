@@ -58,7 +58,6 @@ public class JwtUtil {
                     .parseSignedClaims(token);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
     }

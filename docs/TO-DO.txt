@@ -1,4 +1,3 @@
-Use @Transactional for service layer
 Add Swagger for API documentation
 multi-stage build in Dockerfile
 
