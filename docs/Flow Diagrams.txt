@@ -1,0 +1,30 @@
+Authentication Flow Diagram:
+
+Client
+   │
+   │ POST /auth/login
+   ▼
+Gateway
+   │
+   ├── JwtUtil.generateToken("admin")
+   ▼
+JWT returned
+   │
+   │ GET /api/users
+   │ Authorization: Bearer <token>
+   ▼
+AuthenticationFilter
+   │
+   ├── Extract token
+   ├── Validate signature & expiry
+   ├── Extract username
+   ├── Create Authentication
+   └── Store in SecurityContext
+   ▼
+Spring Security
+   │
+   ├── Authenticated? ✅
+   ▼
+Gateway routes to User/Order Services
+   ▼
+User/Order Service returns data
