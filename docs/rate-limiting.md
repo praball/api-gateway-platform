@@ -45,7 +45,7 @@ For every incoming request:
 
 ---
 
-# 1. Fixed Window Algorithm
+# 1. Fixed Window Algorithm → Counter
 
 ## Concept
 
@@ -104,7 +104,7 @@ Result: 10 requests within ~0.2 seconds.
 
 ---
 
-# 2. Sliding Window Algorithm
+# 2. Sliding Window Algorithm → Sorted Set
 
 ## Concept
 
@@ -177,7 +177,7 @@ The window continuously slides instead of resetting.
 
 ---
 
-# 3. Token Bucket Algorithm
+# 3. Token Bucket Algorithm → Sorted Hash
 
 ## Concept
 
@@ -221,7 +221,7 @@ One request is allowed again.
 
 ---
 
-# 4. Leaky Bucket Algorithm
+# 4. Leaky Bucket Algorithm → Queue
 
 ## Concept
 

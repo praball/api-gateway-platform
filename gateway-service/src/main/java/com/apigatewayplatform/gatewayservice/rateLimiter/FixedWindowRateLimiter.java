@@ -19,7 +19,7 @@ public class FixedWindowRateLimiter implements RateLimiter {
     @Override
     public Mono<Boolean> isAllowed(String username) {
 
-        String redisKey = "rate:" + username;
+        String redisKey = "fixed:" + username;
 
         return redisTemplate.opsForValue()
                 .increment(redisKey)
