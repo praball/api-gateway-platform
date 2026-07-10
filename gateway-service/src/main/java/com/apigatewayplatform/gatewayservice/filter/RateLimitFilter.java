@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 
 @RequiredArgsConstructor
+@Component
 public class RateLimitFilter implements WebFilter {
 
     private final ReactiveStringRedisTemplate redisTemplate;
@@ -22,7 +24,6 @@ public class RateLimitFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
 
-        System.out.println("RateLimitFilter executed");
         String path = exchange.getRequest().getURI().getPath();
 
         if (path.startsWith("/auth")) {
@@ -54,8 +55,6 @@ public class RateLimitFilter implements WebFilter {
                             exchange.getResponse().setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
                             return exchange.getResponse().setComplete();
                         }
-                        System.out.println("Count = " + c);
-                        // TODO: Fix the count getting added twice. Rate limit getting achieved halfway.
                         return chain.filter(exchange);
                     });
                 });

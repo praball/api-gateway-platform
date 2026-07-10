@@ -1,7 +1,6 @@
 multi-stage build in Dockerfile
 
 - Custom API Gateway filters
-- Redis-backed distributed rate limiting
 - Multiple algorithms (Token Bucket, Sliding Window, Leaky Bucket)
 - Kafka async audit logging
 - Request tracing (Trace ID / Correlation ID)

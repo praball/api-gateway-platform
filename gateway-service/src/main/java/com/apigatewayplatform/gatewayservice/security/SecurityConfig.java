@@ -19,13 +19,6 @@ public class SecurityConfig {
     private final AuthenticationFilter authenticationFilter;
 
     @Bean
-    public RateLimitFilter rateLimitFilter(
-            ReactiveStringRedisTemplate redisTemplate,
-            JwtUtil jwtUtil) {
-        return new RateLimitFilter(redisTemplate, jwtUtil);
-    }
-
-    @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http,
                                                       RateLimitFilter rateLimitFilter) {
 
@@ -42,8 +35,6 @@ public class SecurityConfig {
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(authenticationFilter,
-                        SecurityWebFiltersOrder.AUTHENTICATION)
-                .addFilterAfter(rateLimitFilter,
                         SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
     }
