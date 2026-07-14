@@ -35,6 +35,7 @@ Conventions
 - [x] Multiple algorithms (Token Bucket, Sliding Window, Leaky Bucket)
 - [x] Custom API Gateway filters
 - [x] Kafka async audit logging
+- [x] Add Kafka DLT/Message Poisoning handling.
 
 ------------------------------------------------------------------------
 
