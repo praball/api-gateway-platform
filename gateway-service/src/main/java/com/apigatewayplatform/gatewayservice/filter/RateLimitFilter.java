@@ -5,6 +5,7 @@ import com.apigatewayplatform.gatewayservice.kafka.AuditProducer;
 import com.apigatewayplatform.gatewayservice.rateLimiter.RateLimiter;
 import com.apigatewayplatform.gatewayservice.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import java.time.Instant;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class RateLimitFilter implements WebFilter {
 
     private final RateLimiter rateLimiter;
@@ -45,7 +47,7 @@ public class RateLimitFilter implements WebFilter {
                     if (!allowed) {
                         exchange.getResponse()
                                 .setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
-
+                        log.warn("Rate limit exceeded for user: {}", username);
                         return exchange.getResponse().setComplete();
                     }
 

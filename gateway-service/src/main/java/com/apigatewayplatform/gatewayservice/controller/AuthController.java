@@ -4,6 +4,7 @@ import com.apigatewayplatform.gatewayservice.dto.LoginRequest;
 import com.apigatewayplatform.gatewayservice.dto.LoginResponse;
 import com.apigatewayplatform.gatewayservice.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class AuthController {
         String role = username.equals("admin") ? "ADMIN" : "USER";
 
         String token = jwtUtil.generateToken(username, role);
-
+        log.info("Token generated for user: {}", username);
         return ResponseEntity.ok(new LoginResponse(token));
     }
 }

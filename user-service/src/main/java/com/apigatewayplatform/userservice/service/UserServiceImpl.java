@@ -7,12 +7,14 @@ import com.apigatewayplatform.userservice.exception.DuplicateUserException;
 import com.apigatewayplatform.userservice.exception.UserNotFoundException;
 import com.apigatewayplatform.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -22,6 +24,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
+        log.info("getAllUsers - retrieving all users");
         return userRepository.findAll().stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
@@ -32,6 +35,7 @@ public class UserServiceImpl implements UserService {
     public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
+        log.info("Fetching user for userId = {}", user.getId());
 
         return convertToResponse(user);
     }
@@ -44,6 +48,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = convertToEntity(userRequest);
         User createdUser = userRepository.save(user);
+        log.info("User created. userId = {}", createdUser.getId());
         return convertToResponse(createdUser);
     }
 
@@ -90,6 +95,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
+        log.info("Deleting user for userId = {}", user.getId());
         userRepository.delete(user);
     }
 

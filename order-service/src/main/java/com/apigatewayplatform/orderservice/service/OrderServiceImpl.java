@@ -8,6 +8,7 @@ import com.apigatewayplatform.orderservice.exception.OrderNotFoundException;
 import com.apigatewayplatform.orderservice.exception.UserNotFoundException;
 import com.apigatewayplatform.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -26,6 +28,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public List<OrderResponse> getAllOrders() {
+        log.info("getAllOrders - retrieving all orders");
         return orderRepository.findAll().stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
@@ -36,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse getOrderById(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
-
+        log.info("Fetching order for orderId = {}", order.getId());
         return convertToResponse(order);
     }
 
@@ -47,7 +50,9 @@ public class OrderServiceImpl implements OrderService {
         if(!userClient.userExists(orderRequest.getUserId())) {
             throw new UserNotFoundException(orderRequest.getUserId());
         }
+        log.info("Creating order for userId = {}", order.getUserId());
         Order createdOrder = orderRepository.save(order);
+        log.info("Order created. orderId = {}", createdOrder.getId());
         return convertToResponse(createdOrder);
     }
 
@@ -88,6 +93,7 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
+        log.info("Deleting order for orderId = {}", order.getId());
         orderRepository.delete(order);
     }
 
