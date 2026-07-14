@@ -1,2 +1,3 @@
 CREATE DATABASE orderdb;
 CREATE DATABASE userdb;
+CREATE DATABASE auditdb;
