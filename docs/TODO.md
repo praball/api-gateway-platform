@@ -11,7 +11,6 @@ Conventions
 ------------------------------------------------------------------------
 
 ## Backlog:
-- [ ] multi-stage build in Dockerfile
 - [ ] Request tracing (Trace ID / Correlation ID)
 - [ ] Micrometer + Prometheus + Grafana + New Relic
 - [ ] Config Server
