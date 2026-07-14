@@ -1,5 +1,7 @@
 package com.apigatewayplatform.gatewayservice.filter;
 
+import com.apigatewayplatform.gatewayservice.dto.AuditEvent;
+import com.apigatewayplatform.gatewayservice.kafka.AuditProducer;
 import com.apigatewayplatform.gatewayservice.rateLimiter.RateLimiter;
 import com.apigatewayplatform.gatewayservice.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,8 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
+import java.time.Instant;
+
 @RequiredArgsConstructor
 @Component
 public class RateLimitFilter implements WebFilter {
@@ -18,6 +22,8 @@ public class RateLimitFilter implements WebFilter {
     private final RateLimiter rateLimiter;
 
     private final JwtUtil jwtUtil;
+
+    private final AuditProducer auditProducer;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
@@ -42,6 +48,15 @@ public class RateLimitFilter implements WebFilter {
 
                         return exchange.getResponse().setComplete();
                     }
+
+                    AuditEvent event = AuditEvent.builder()
+                            .username(username)
+                            .method(exchange.getRequest().getMethod().name())
+                            .path(exchange.getRequest().getURI().getPath())
+                            .timestamp(Instant.now())
+                            .build();
+
+                    auditProducer.publish(event);
 
                     return chain.filter(exchange);
                 });

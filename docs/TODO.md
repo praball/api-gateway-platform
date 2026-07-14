@@ -12,8 +12,6 @@ Conventions
 
 ## Backlog:
 - [ ] multi-stage build in Dockerfile
-- [ ] Custom API Gateway filters
-- [ ] Kafka async audit logging
 - [ ] Request tracing (Trace ID / Correlation ID)
 - [ ] Micrometer + Prometheus + Grafana + New Relic
 - [ ] Config Server
@@ -35,6 +33,8 @@ Conventions
 - [x] Role-based routing
 - [x] Redis-backed distributed rate limiting
 - [x] Multiple algorithms (Token Bucket, Sliding Window, Leaky Bucket)
+- [x] Custom API Gateway filters
+- [x] Kafka async audit logging
 
 ------------------------------------------------------------------------
 
