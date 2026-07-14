@@ -32,7 +32,7 @@ public class RateLimitFilter implements WebFilter {
 
         String path = exchange.getRequest().getURI().getPath();
 
-        if (path.startsWith("/auth")) return chain.filter(exchange);
+        if (path.startsWith("/auth") || path.startsWith("/actuator")) return chain.filter(exchange);
 
         String authHeader = exchange.getRequest()
                 .getHeaders()

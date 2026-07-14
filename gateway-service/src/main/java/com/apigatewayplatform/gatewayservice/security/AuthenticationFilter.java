@@ -32,7 +32,7 @@ public class AuthenticationFilter implements WebFilter {
         String path = exchange.getRequest().getURI().getPath();
 
         // Skip login endpoint
-        if (path.startsWith("/auth")) {
+        if (path.startsWith("/auth") || path.startsWith("/actuator")) {
             return chain.filter(exchange);
         }
 
