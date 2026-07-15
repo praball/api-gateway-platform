@@ -11,8 +11,6 @@ Conventions
 ------------------------------------------------------------------------
 
 ## Backlog:
-- [ ] Request tracing (Trace ID / Correlation ID)
-- [ ] Micrometer + Prometheus + Grafana + New Relic
 - [ ] Config Server
 - [ ] Kubernetes
 - [ ] MCP Server
@@ -23,18 +21,21 @@ Conventions
 - [x] Add @RestControllerAdvice
 - [x] Add DTOs
 - [x] Add Validations
-- [x] API request response model
+- [x] Add API request response model
+- [x] Add Postgres database persistence
 - [x] Use @Transactional for service layer
 - [x] Add Swagger for API documentation
 - [x] Add Bean validation
 - [x] Add docker-compose.yaml
-- [x] JWT authentication & authorization
-- [x] Role-based routing
-- [x] Redis-backed distributed rate limiting
-- [x] Multiple algorithms (Token Bucket, Sliding Window, Leaky Bucket)
-- [x] Custom API Gateway filters
-- [x] Kafka async audit logging
+- [x] Add JWT authentication & authorization
+- [x] Add Role-based routing
+- [x] Add Redis-backed distributed rate limiting
+- [x] Add Multiple algorithms (Token Bucket, Sliding Window, Leaky Bucket)
+- [x] Add Custom API Gateway filters
+- [x] Add Kafka async audit logging with persistence
 - [x] Add Kafka DLT/Message Poisoning handling.
+- [x] Request tracing (Trace ID / Correlation ID)
+- [x] Add Micrometer + Prometheus + Grafana + New Relic APM integration
 
 ------------------------------------------------------------------------
 
