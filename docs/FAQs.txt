@@ -91,3 +91,12 @@ Think:
 
 CompletableFuture ≈ async task
 Mono ≈ async task + reactive pipeline
+
+--------x--------
+
+Easy analogy
+Micrometer = Fitness tracker (collects your heart rate)
+Prometheus = Stores all your fitness history
+Grafana = Mobile app that shows graphs and dashboards
+
+So, Micrometer collects, Prometheus stores, and Grafana displays.

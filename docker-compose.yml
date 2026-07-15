@@ -25,9 +25,15 @@ services:
       - "8761:8761"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      JAVA_TOOL_OPTIONS: >
+        -javaagent:/newrelic/newrelic.jar
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_APP_NAME: discovery-service
     depends_on:
       - postgres
       - redis
+    volumes:
+      - ./newrelic:/newrelic
 
   gateway-service:
     build: ./gateway-service
@@ -35,10 +41,16 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      JAVA_TOOL_OPTIONS: >
+        -javaagent:/newrelic/newrelic.jar
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_APP_NAME: gateway-service
     depends_on:
       - discovery-service
       - redis
       - kafka
+    volumes:
+      - ./newrelic:/newrelic
 
   user-service:
     build: ./user-service
@@ -46,9 +58,15 @@ services:
       - "8082:8082"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      JAVA_TOOL_OPTIONS: >
+        -javaagent:/newrelic/newrelic.jar
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_APP_NAME: user-service
     depends_on:
       - discovery-service
       - postgres
+    volumes:
+      - ./newrelic:/newrelic
 
   order-service:
     build: ./order-service
@@ -56,9 +74,15 @@ services:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      JAVA_TOOL_OPTIONS: >
+        -javaagent:/newrelic/newrelic.jar
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_APP_NAME: order-service
     depends_on:
       - discovery-service
       - postgres
+    volumes:
+      - ./newrelic:/newrelic
 
   audit-service:
     build: ./audit-service
@@ -66,9 +90,15 @@ services:
       - "8083:8083"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      JAVA_TOOL_OPTIONS: >
+        -javaagent:/newrelic/newrelic.jar
+      NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+      NEW_RELIC_APP_NAME: audit-service
     depends_on:
       - discovery-service
       - postgres
+    volumes:
+      - ./newrelic:/newrelic
 
   kafka:
     image: apache/kafka:latest

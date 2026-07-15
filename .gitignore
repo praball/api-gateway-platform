@@ -60,3 +60,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### New Relic ###
+newrelic/*.jar
+newrelic/logs/
