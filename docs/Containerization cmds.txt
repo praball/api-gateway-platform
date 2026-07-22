@@ -5,3 +5,6 @@ docker compose up -d
 mvn clean package -pl order-service -am -DskipTests
 docker compose build --no-cache order-service
 docker compose up -d order-service
+
+kubectl apply -f k8s/gateway-deployment.yml
+kubectl apply -f k8s/gateway-service.yml
