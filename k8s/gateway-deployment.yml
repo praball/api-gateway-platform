@@ -1,26 +1,45 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: gateway-service
+
 spec:
   replicas: 1
+
   selector:
     matchLabels:
       app: gateway-service
+
   template:
     metadata:
       labels:
         app: gateway-service
+
     spec:
       containers:
         - name: gateway-service
           image: api-gateway-platform-gateway-service:latest
           imagePullPolicy: IfNotPresent
+
           ports:
             - containerPort: 8080
+
           env:
             - name: SPRING_PROFILES_ACTIVE
               valueFrom:
                 configMapKeyRef:
                   name: gateway-config
                   key: SPRING_PROFILES_ACTIVE
+
+            - name: EUREKA_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: gateway-config
+                  key: EUREKA_URL
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: gateway-secret
+                  key: JWT_SECRET
