@@ -100,3 +100,29 @@ Prometheus = Stores all your fitness history
 Grafana = Mobile app that shows graphs and dashboards
 
 So, Micrometer collects, Prometheus stores, and Grafana displays.
+
+
+--------x--------
+Resources:
+Prevent one Pod from consuming the whole machine.
+
+resources:
+  requests:
+    cpu: "250m"
+    memory: "256Mi"
+
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+Interview summary:
+Deployment → manages Pods.
+Service → stable endpoint + load balances traffic.
+ConfigMap → non-sensitive configuration.
+Secret → sensitive values (JWTs, passwords, API keys).
+Scaling → change replica count.
+Rolling Update → zero-downtime deployment.
+Liveness Probe → "Should Kubernetes restart this container?"
+Readiness Probe → "Can this Pod receive traffic yet?"
+Resources Requests → minimum resources Kubernetes reserves.
+Resources Limits → maximum the container may use.
